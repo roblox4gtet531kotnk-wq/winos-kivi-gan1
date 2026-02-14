@@ -14,40 +14,40 @@ app.get('/', (req, res) => {
 app.post('/ai-chat', async (req, res) => {
   try {
     const message = req.body.message || 'Привет';
-    console.log('Получено сообщение:', message);
     
-    const response = await fetch('https://api.proxyapi.ru/v1/chat/completions', {
+    const response = await fetch('https://llm.api.cloud.yandex.net/foundationModels/v1/completion', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer sk-0Z7djtacHN2DcPs6go09XalNSOasbu5s'
+        'Authorization': 'Api-Key AQVNzgq9lmAwbcZ33luXEjGfnll-OcmcpZcbktR7'
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        modelUri: 'gpt://b1g2iq9nteq4s00ma2v1/yandexgpt-lite',
+        completionOptions: {
+          stream: false,
+          temperature: 0.7,
+          maxTokens: 300
+        },
         messages: [
-          {role: 'system', content: 'Ты весёлый помощник игры KIWI GUN. Отвечай на русском языке коротко и с эмодзи. Помогай игрокам с вопросами об игре.'},
-          {role: 'user', content: message}
-        ],
-        max_tokens: 300,
-        temperature: 0.7
+          {role: 'system', text: 'Ты весёлый помощник игры KIWI GUN. Отвечай на русском коротко и с эмодзи.'},
+          {role: 'user', text: message}
+        ]
       })
     });
     
     const data = await response.json();
-    console.log('Ответ API:', JSON.stringify(data));
     
-    if (data.choices && data.choices[0] && data.choices[0].message) {
-      res.json({reply: data.choices[0].message.content});
+    if (data.result && data.result.alternatives && data.result.alternatives[0]) {
+      res.json({reply: data.result.alternatives[0].message.text});
     } else if (data.error) {
-      res.json({reply: '❌ Ошибка API: ' + data.error.message});
+      res.json({reply: '❌ ' + data.error.message});
     } else {
-      res.json({reply: '🤔 Не получил ответ от ИИ'});
+      res.json({reply: '🤔 Не получил ответ'});
     }
   } catch(e) {
-    console.log('Ошибка:', e.message);
-    res.json({reply: '❌ Ошибка: ' + e.message});
+    res.json({reply: '❌ ' + e.message});
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log('🥝 KIWI GUN запущен на порту ' + PORT));
+app.listen(PORT, () => console.log('🥝 KIWI GUN на порту ' + PORT));
