@@ -16,7 +16,7 @@ app.post('/ai-chat', async (req, res) => {
     const message = req.body.message || 'Привет';
     console.log('Получено сообщение:', message);
     
-    const response = await fetch('https://api.proxyapi.ru/openai/v1/chat/completions', {
+    const response = await fetch('https://api.proxyapi.ru/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
